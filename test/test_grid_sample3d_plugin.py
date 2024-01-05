@@ -21,10 +21,23 @@ class OutputAllocator(trt.IOutputAllocator):
         self.shapes[tensor_name] = tuple(shape)
 
 def load_plugin(logger: trt.Logger):
-    success = ctypes.CDLL("../build/libgrid_sample_3d_plugin.so", mode = ctypes.RTLD_GLOBAL)
+    success = ctypes.CDLL("build/libgrid_sample_3d_plugin.so", mode = ctypes.RTLD_GLOBAL)
     if not success:
         print("load grid_sample_3d plugin error")
         raise Exception()
+
+    trt.init_libnvinfer_plugins(logger, "")
+
+    registry = trt.get_plugin_registry()
+    plugin_creator = registry.get_plugin_creator("GridSample3D", "1", "")
+
+    pf_interpolation_mode = trt.PluginField("interpolation_mode", np.array([0], np.int32), trt.PluginFieldType.INT32)
+    pf_padding_mode = trt.PluginField("padding_mode", np.array([0], np.int32), trt.PluginFieldType.INT32)
+    pf_align_corners = trt.PluginField("align_corners", np.array([0], np.int32), trt.PluginFieldType.INT32)
+    pfc = trt.PluginFieldCollection([pf_interpolation_mode, pf_padding_mode, pf_align_corners])
+    plugin = plugin_creator.create_plugin("grid_sample_3d", pfc)
+
+    return plugin    
 
 def make_network_and_engine(logger: trt.Logger, 
                             plugin: trt.IPluginV2,
