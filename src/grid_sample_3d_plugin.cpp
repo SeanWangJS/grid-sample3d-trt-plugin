@@ -360,4 +360,17 @@ const char* GridSample3DPluginCreator::getPluginNamespace() const noexcept {
     return mNamespace.c_str();
 }
 
+extern "C" TENSORRTAPI IPluginCreatorInterface* const* getCreators(int32_t& nbCreators)
+{
+    nbCreators = 1;
+    static GridSample3DPluginCreator sRoiAlignCreator;
+    static IPluginCreatorInterface* const kPLUGIN_CREATOR_LIST[] = {&sRoiAlignCreator};
+    return kPLUGIN_CREATOR_LIST;
+}
+
+extern "C" TENSORRTAPI void setLoggerFinder(nvinfer1::ILoggerFinder* finder)
+{
+
+}
+
 REGISTER_TENSORRT_PLUGIN(GridSample3DPluginCreator);
