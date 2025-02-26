@@ -18,16 +18,14 @@ endif()
 file(GLOB SOURCES "./src/*.cpp")
 file(GLOB CU_SOURCE "./src/*.cu")
 
-message(STATUS "TensorRT_INCLUDE_DIR: ${TensorRT_INCLUDE_DIR}")
-message(STATUS "TensorRT_LIB_DIR: ${TensorRT_LIB_DIR}")
+message(STATUS "CUDAToolkit_INCLUDE_DIRS: ${CUDAToolkit_INCLUDE_DIRS}")
 
 add_library(${PROJECT_NAME} SHARED ${SOURCES} ${CU_SOURCE})
 
-target_include_directories(${PROJECT_NAME} PRIVATE "./src" ${CUDAToolkit_INCLUDE_DIR} ${TensorRT_INCLUDE_DIR})
-target_link_directories(${PROJECT_NAME} PRIVATE ${TensorRT_LIB_DIR})
+target_include_directories(${PROJECT_NAME} PRIVATE "./src" ${CUDAToolkit_INCLUDE_DIRS})
 target_link_libraries(${PROJECT_NAME} PRIVATE nvinfer)
 
-set_target_properties(${PROJECT_NAME} PROPERTIES CUDA_ARCHITECTURES "89")
+set_target_properties(${PROJECT_NAME} PROPERTIES CUDA_ARCHITECTURES "70;80;86;89")
 
 add_subdirectory(test)
 enable_testing()
